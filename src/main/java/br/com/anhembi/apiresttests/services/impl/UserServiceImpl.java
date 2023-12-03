@@ -1,6 +1,6 @@
 package br.com.anhembi.apiresttests.services.impl;
 
-import br.com.anhembi.apiresttests.domain.User;
+import br.com.anhembi.apiresttests.domain.Usuario;
 import br.com.anhembi.apiresttests.services.UserService;
 import br.com.anhembi.apiresttests.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +15,8 @@ public class UserServiceImpl implements UserService {
     private UserRepository repository;
 
     @Override
-    public User findById(Integer id) {
-        Optional<User> obj = repository.findById(id);
+    public Usuario findById(Integer id) {
+        Optional<Usuario> obj = repository.findById(id);
         return obj.orElse(null);
     }
 }

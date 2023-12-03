@@ -1,7 +1,7 @@
 package br.com.anhembi.apiresttests.services;
 
-import br.com.anhembi.apiresttests.domain.User;
+import br.com.anhembi.apiresttests.domain.Usuario;
 public interface UserService {
 
-    User findById(Integer id);
+    Usuario findById(Integer id);
 }

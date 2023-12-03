@@ -1,6 +1,6 @@
 package br.com.anhembi.apiresttests.resources;
 
-import br.com.anhembi.apiresttests.domain.User;
+import br.com.anhembi.apiresttests.domain.Usuario;
 import br.com.anhembi.apiresttests.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +17,7 @@ public class UserResource {
     private UserService service;
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<User> findById(@PathVariable Integer id){
+    public ResponseEntity<Usuario> findById(@PathVariable Integer id){
         return ResponseEntity.ok().body(service.findById(id));
     }
 
