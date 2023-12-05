@@ -125,7 +125,32 @@ class UserServiceImplTest {
     }
 
     @Test
-    void update() {
+    void whenUpdateThenReturnSuccess() {
+        Mockito.when(repository.save(any())).thenReturn(user);
+
+        Usuario response = service.update(userDTO); // Mockei o método e chamei ele aqui
+
+        // Ess parte é onde asseguramos que o teste terá os resultados que queremos
+        Assertions.assertNotNull(response);
+        Assertions.assertEquals(Usuario.class, response.getClass());
+        Assertions.assertEquals(ID, response.getId());
+        Assertions.assertEquals(NAME, response.getName());
+        Assertions.assertEquals(EMAIL, response.getEmail());
+        Assertions.assertEquals(PASSWORD, response.getPassword());
+    }
+
+    @Test
+    void whenUpdateThenReturnAnDataIntegrityViolationException() {
+        Mockito.when(repository.findByEmail(anyString())).thenReturn(optionalUser);
+
+        try {
+            // para assegurar se o e-mail será diferente, validamos quando diverge
+            optionalUser.get().setId(2);
+            service.update(userDTO);
+        }catch (Exception ex){
+            Assertions.assertEquals(DataIntegratyViolationException.class, ex.getClass());
+            Assertions.assertEquals("E-mail já cadastrado no sistema", ex.getMessage());
+        }
     }
 
     @Test
