@@ -21,6 +21,7 @@ import java.util.Optional;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.times;
 
 @SpringBootTest
 class UserServiceImplTest {
@@ -140,13 +141,13 @@ class UserServiceImplTest {
     }
 
     @Test
-    void whenUpdateThenReturnAnDataIntegrityViolationException() {
+    void whenUpdateThenReturnAnDataIntegrityViolationException() { //rever aula 18
         Mockito.when(repository.findByEmail(anyString())).thenReturn(optionalUser);
 
         try {
             // para assegurar se o e-mail será diferente, validamos quando diverge
             optionalUser.get().setId(2);
-            service.update(userDTO);
+            service.create(userDTO);
         }catch (Exception ex){
             Assertions.assertEquals(DataIntegratyViolationException.class, ex.getClass());
             Assertions.assertEquals("E-mail já cadastrado no sistema", ex.getMessage());
@@ -154,11 +155,11 @@ class UserServiceImplTest {
     }
 
     @Test
-    void delete() {
-    }
-
-    @Test
-    void findByEmail() {
+    void deleteWithSuccess() {
+        Mockito.when(repository.findById(anyInt())).thenReturn(optionalUser);
+        Mockito.doNothing().when(repository).deleteById(anyInt());
+        service.delete(ID);
+        Mockito.verify(repository, times(1)).deleteById(anyInt());
     }
 
     private void startUser(){
