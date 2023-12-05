@@ -164,8 +164,7 @@ class UserServiceImplTest {
 
     @Test
     void deleteWithObjectNotFoundException() {
-        Mockito.when(repository.findById(anyInt()))
-                .thenThrow(new ObjectNotFoundException("Objeto não encontrado"));
+        Mockito.when(repository.findById(anyInt())).thenThrow(new ObjectNotFoundException("Objeto não encontrado"));
 
         try{
             // chama o método
