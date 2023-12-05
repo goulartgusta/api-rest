@@ -3,6 +3,7 @@ package br.com.anhembi.apiresttests.services.impl;
 import br.com.anhembi.apiresttests.domain.Usuario;
 import br.com.anhembi.apiresttests.domain.dto.UserDTO;
 import br.com.anhembi.apiresttests.repositories.UserRepository;
+import br.com.anhembi.apiresttests.services.exceptions.DataIntegratyViolationException;
 import br.com.anhembi.apiresttests.services.exceptions.ObjectNotFoundException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,6 +20,7 @@ import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 
 @SpringBootTest
 class UserServiceImplTest {
@@ -107,6 +109,21 @@ class UserServiceImplTest {
         Assertions.assertEquals(EMAIL, response.getEmail());
         Assertions.assertEquals(PASSWORD, response.getPassword());
     }
+
+    @Test
+    void whenCreateThenReturnAnDataIntegrityViolationException() {
+        Mockito.when(repository.findByEmail(anyString())).thenReturn(optionalUser);
+
+        try {
+            // para assegurar se o e-mail será diferente, validamos quando diverge
+            optionalUser.get().setId(2);
+            service.create(userDTO);
+        }catch (Exception ex){
+            Assertions.assertEquals(DataIntegratyViolationException.class, ex.getClass());
+            Assertions.assertEquals("E-mail já cadastrado no sistema", ex.getMessage());
+        }
+    }
+
     @Test
     void update() {
     }
