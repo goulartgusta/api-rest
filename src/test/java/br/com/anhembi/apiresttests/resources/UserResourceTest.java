@@ -12,8 +12,13 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 
 @SpringBootTest
@@ -41,16 +46,21 @@ class UserResourceTest {
 
     @Test
     void whenFindByIdThenReturnSucces() {
+        //mockando quando procurarmos uma ID qualquer retorna o user da ID
         Mockito.when(service.findById(anyInt())).thenReturn(user);
-        Mockito.when(mapper.map(Mockito.any(), Mockito.any())).thenReturn(userDTO);
+        Mockito.when(mapper.map(any(), any())).thenReturn(userDTO);
 
+        // chama método para procurar id como parametro o id static que temos
         ResponseEntity<UserDTO> response = resource.findById(ID);
 
+        // asseguramos que não teremos respostas nulas nem o corpo da resposta
         Assertions.assertNotNull(response);
         Assertions.assertNotNull(response.getBody());
+        // asseguramos que a resposta do id terá a classe de ResponseEntity e que o corpo seja da calsse UserDTO
         Assertions.assertEquals(ResponseEntity.class, response.getClass());
         Assertions.assertEquals(UserDTO.class, response.getBody().getClass());
 
+        // Asseguramos que minhas instancias são as mesmas do meu ID estatico chamado
         Assertions.assertEquals(ID, response.getBody().getId());
         Assertions.assertEquals(NAME, response.getBody().getName());
         Assertions.assertEquals(EMAIL, response.getBody().getEmail());
@@ -58,7 +68,24 @@ class UserResourceTest {
     }
 
     @Test
-    void findAll() {
+    void WhenFindAllReturnAListOfUserDTO() {
+        Mockito.when(service.findAll()).thenReturn(List.of(user));
+        Mockito.when(mapper.map(any(), any())).thenReturn(userDTO);
+
+        ResponseEntity<List<UserDTO>> response = resource.findAll();
+
+        Assertions.assertNotNull(response);
+        Assertions.assertNotNull(response.getBody());
+        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
+        Assertions.assertEquals(ResponseEntity.class, response.getClass());
+        Assertions.assertEquals(ArrayList.class, response.getBody().getClass());
+        Assertions.assertEquals(UserDTO.class, response.getBody().get(0).getClass());
+
+        //assegurando que os primeiros campos se relacionam com o chamado
+        Assertions.assertEquals(ID, response.getBody().get(0).getId());
+        Assertions.assertEquals(NAME, response.getBody().get(0).getName());
+        Assertions.assertEquals(EMAIL, response.getBody().get(0).getEmail());
+        Assertions.assertEquals(PASSWORD, response.getBody().get(0).getPassword());
     }
 
     @Test
