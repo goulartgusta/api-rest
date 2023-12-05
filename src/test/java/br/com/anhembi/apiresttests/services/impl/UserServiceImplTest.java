@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.anyInt;
-
+import static org.mockito.ArgumentMatchers.any;
 
 @SpringBootTest
 class UserServiceImplTest {
@@ -94,9 +94,19 @@ class UserServiceImplTest {
     }
 
     @Test
-    void create() {
-    }
+    void whenCreateThenReturnSuccess() {
+        Mockito.when(repository.save(any())).thenReturn(user);
 
+        Usuario response = service.create(userDTO); // Mockei o método e chamei ele aqui
+
+        // Ess parte é onde asseguramos que o teste terá os resultados que queremos
+        Assertions.assertNotNull(response);
+        Assertions.assertEquals(Usuario.class, response.getClass());
+        Assertions.assertEquals(ID, response.getId());
+        Assertions.assertEquals(NAME, response.getName());
+        Assertions.assertEquals(EMAIL, response.getEmail());
+        Assertions.assertEquals(PASSWORD, response.getPassword());
+    }
     @Test
     void update() {
     }
