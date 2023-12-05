@@ -3,20 +3,21 @@ package br.com.anhembi.apiresttests.services.impl;
 import br.com.anhembi.apiresttests.domain.Usuario;
 import br.com.anhembi.apiresttests.domain.dto.UserDTO;
 import br.com.anhembi.apiresttests.repositories.UserRepository;
+import br.com.anhembi.apiresttests.services.exceptions.ObjectNotFoundException;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.when;
+
 
 @SpringBootTest
 class UserServiceImplTest {
@@ -46,17 +47,32 @@ class UserServiceImplTest {
     @Test
     void whenFindByIdThenReturnAnUserInstance() {
         // quando o método for chamado por qualquer int, retorna resposta realizada abaixo do usuario
-        when(repository.findById(anyInt())).thenReturn(optionalUser);
+        Mockito.when(repository.findById(anyInt())).thenReturn(optionalUser);
 
         Usuario response = service.findById(ID);// chamando método
 
-        assertNotNull(response);
+        Assertions.assertNotNull(response);
         // assegure que vou receber usuario
-        assertEquals(Usuario.class, response.getClass());
-        // Assegure que o ID, name e email criado seja igual a resposta recebida
-        assertEquals(ID, response.getId());
-        assertEquals(NAME, response.getName());
-        assertEquals(EMAIL, response.getEmail());
+        Assertions.assertEquals(Usuario.class, response.getClass());
+        // Assegure que o ID, NAME e EMAIL criado seja igual a resposta recebida
+        Assertions.assertEquals(ID, response.getId());
+        Assertions.assertEquals(NAME, response.getName());
+        Assertions.assertEquals(EMAIL, response.getEmail());
+    }
+
+    @Test
+    void whenFindByIdThenReturnAnObjectNotFoundException(){
+        // quando o método for chamado por qualquer int, retorna mensagem
+        Mockito.when(repository.findById(anyInt())).thenThrow(new ObjectNotFoundException("Objeto não encontrado!"));
+
+        try{
+            // tente chamar o método
+            service.findById(ID);
+        }catch (Exception ex){
+            // Assegure que essa exceção seja do tipo correto e se a mensagem é igual
+            Assertions.assertEquals(ObjectNotFoundException.class, ex.getClass());
+            Assertions.assertEquals("Objeto não encontrado!", ex.getMessage());
+        }
     }
 
     @Test
