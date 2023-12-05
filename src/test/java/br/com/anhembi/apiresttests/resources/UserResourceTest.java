@@ -3,13 +3,18 @@ package br.com.anhembi.apiresttests.resources;
 import br.com.anhembi.apiresttests.domain.Usuario;
 import br.com.anhembi.apiresttests.domain.dto.UserDTO;
 import br.com.anhembi.apiresttests.services.impl.UserServiceImpl;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.ResponseEntity;
+
+import static org.mockito.ArgumentMatchers.anyInt;
 
 @SpringBootTest
 class UserResourceTest {
@@ -27,6 +32,7 @@ class UserResourceTest {
     private UserServiceImpl service;
     @Mock
     private ModelMapper mapper;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -34,7 +40,21 @@ class UserResourceTest {
     }
 
     @Test
-    void findById() {
+    void whenFindByIdThenReturnSucces() {
+        Mockito.when(service.findById(anyInt())).thenReturn(user);
+        Mockito.when(mapper.map(Mockito.any(), Mockito.any())).thenReturn(userDTO);
+
+        ResponseEntity<UserDTO> response = resource.findById(ID);
+
+        Assertions.assertNotNull(response);
+        Assertions.assertNotNull(response.getBody());
+        Assertions.assertEquals(ResponseEntity.class, response.getClass());
+        Assertions.assertEquals(UserDTO.class, response.getBody().getClass());
+
+        Assertions.assertEquals(ID, response.getBody().getId());
+        Assertions.assertEquals(NAME, response.getBody().getName());
+        Assertions.assertEquals(EMAIL, response.getBody().getEmail());
+        Assertions.assertEquals(PASSWORD, response.getBody().getPassword());
     }
 
     @Test
