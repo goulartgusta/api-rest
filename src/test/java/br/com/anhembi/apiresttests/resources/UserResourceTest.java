@@ -94,18 +94,41 @@ class UserResourceTest {
 
         ResponseEntity<UserDTO> response = resource.create(userDTO);
 
-        //Assegurando que será da calsse responseentity, que vai ser um 201 crated e que tenha a uri para o objeto
+        //Assegurando que será da classe responseentity, que vai ser um 201 crated e que tenha a uri para o objeto
         Assertions.assertEquals(ResponseEntity.class, response.getClass());
         Assertions.assertEquals(HttpStatus.CREATED, response.getStatusCode());
         Assertions.assertNotNull(response.getHeaders().get("Location"));
     }
 
     @Test
-    void update() {
+    void WhenUpdateThenReturnSuccess() {
+        Mockito.when(service.update(userDTO)).thenReturn(user);
+        Mockito.when(mapper.map(any(), any())).thenReturn(userDTO);
+
+        ResponseEntity<UserDTO> response = resource.update(ID, userDTO);
+
+        Assertions.assertNotNull(response);
+        Assertions.assertNotNull(response.getBody());
+        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
+        Assertions.assertEquals(ResponseEntity.class, response.getClass());
+        Assertions.assertEquals(UserDTO.class, response.getBody().getClass());
+
+        Assertions.assertEquals(ID, response.getBody().getId());
+        Assertions.assertEquals(NAME, response.getBody().getName());
+        Assertions.assertEquals(EMAIL, response.getBody().getEmail());
     }
 
     @Test
-    void delete() {
+    void WhenDeleteThenReturnSuccess() {
+        Mockito.doNothing().when(service).delete(anyInt());
+
+        ResponseEntity<UserDTO> response = resource.delete(ID);
+
+        Assertions.assertNotNull(response);
+        Assertions.assertEquals(ResponseEntity.class,response.getClass());
+        Assertions.assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        // verifica quantas vezes vou passar o método delete no mock
+        Mockito.verify(service, Mockito.times(1)).delete(anyInt());
     }
 
     private void startUser(){
