@@ -1,5 +1,6 @@
 package br.com.anhembi.apiresttests.resources.exceptions;
 
+import br.com.anhembi.apiresttests.services.exceptions.DataIntegratyViolationException;
 import br.com.anhembi.apiresttests.services.exceptions.ObjectNotFoundException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,7 +43,18 @@ class ResourceExceptionHandlerTest {
     }
 
     @Test
-    void dataIntegratyViolationException() {
+    void dataIntegrityViolationException() {
+        ResponseEntity<StandardError> response = exceptionHandler
+                .dataIntegrityViolationException(
+                        new DataIntegratyViolationException("E-mail já cadastrado!"),
+                        new MockHttpServletRequest());
 
+        Assertions.assertNotNull(response);
+        Assertions.assertNotNull(response.getBody());
+        Assertions.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        Assertions.assertEquals(ResponseEntity.class, response.getClass());
+        Assertions.assertEquals(StandardError.class, response.getBody().getClass());
+        Assertions.assertEquals("E-mail já cadastrado!", response.getBody().getError());
+        Assertions.assertEquals(400, response.getBody().getStatus());
     }
 }
